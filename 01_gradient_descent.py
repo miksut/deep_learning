@@ -1,7 +1,13 @@
 import numpy as np
 import math
 import matplotlib.pyplot as plt
+import scipy.linalg
+from matplotlib.backends.backend_pdf import PdfPages
 
+
+# global variables
+iterations = 5000
+rng = np.random.default_rng()
 
 # dedicated class and functions according to task descrition
 class GradientDescent:
@@ -18,27 +24,32 @@ class GradientDescent:
 
 		for w in range(self.weights_init.shape[0]):
 			for lr in range(self.learning_rate.shape[0]):
-				loss = math.inf
-				w_t0 = self.weights_init[w]
-				w_t1 = self.weights_init[w]
+				w_current = self.weights_init[w].copy()
+				loss = self.loss_function(w_current)
 
-				while (loss - self.loss_function(w_t1)) >= 1.0:
-					loss = self.loss_function(w_t1)
-					w_t0 = w_t1
+				# stopping criterion part 1: limit the number of iterations
+				for j in range(iterations):
+					grad = self.gradient(w_current)
 
-					grad = self.gradient(w_t1)
-					w_t1 = w_t1 - self.learning_rate[lr] * grad
+					# stopping criterion part 2: if norm of gradient is small -> stop
+					if scipy.linalg.norm(grad) < 1e-4:
+						break
+
+					w_current -= self.learning_rate[lr] * grad
+					loss = self.loss_function(w_current)
 
 				results[w][lr]['loss'] = loss
-				results[w][lr]['weights'] = w_t0
+				results[w][lr]['weights'] = w_current
 
 		return results
+
 
 # Loss function: J = (w_1)² + (w_2)² + 30sin(w_1)sin(w_2)
 def loss_function(w):
 	return np.power(w[0],2) + np.power(w[1],2) + (30*np.sin(w[0])*np.sin(w[1]))
 
 def gradient(w):
+	# Note: an elegant alternative for implementation is to return 2.0*w + 30.0 * np.cos(w) * np.sin(w[::-1]), i.e. flipping the order of the elements in the last term
 	grad = np.zeros((w.shape[0]))
 	grad[0] = (2*w[0]) + (30*np.cos(w[0])*np.sin(w[1]))
 	grad[1] = (2*w[1]) + (30*np.sin(w[0])*np.cos(w[1]))
@@ -46,36 +57,52 @@ def gradient(w):
 
 
 # main
-weights_init = np.array([[8.0, 8.0], [5.0, 5.0], [2.5, 2.5], [0.0, 0.0], [-7.5, -7.5]])
+# randomly initialize arguments in a given interval
+weights_init = rng.uniform(-10.0, 10.0, (5,2))
 learning_rate = np.array([1.0, 0.7, 0.5, 0.4, 0.3, 0.2, 0.1, 0.05])
 
 gd = GradientDescent(loss_function, gradient, weights_init, learning_rate)
 res = gd.run_gd()
-print(res)
-print(res[0][:]['loss'])
 
+# evaluation results
+print(res)
 
 # Plotting
-fig_1 = plt.figure()
+# save evaluation results in a pdf file
+pdf = PdfPages("task01_evaluation.pdf")
 
 for i in range(weights_init.shape[0]):
-	ax_1 = fig_1.add_subplot(3,2,(i+1), title=f"Initialised Weights: {weights_init[i]}", xlabel="Learning Rate", ylabel="Optimised Loss" )
-	ax_1.plot(learning_rate, res[i]['loss'])
-	ax_1.plot(learning_rate, res[i]['loss'], 'o')
+	plt.plot(learning_rate, res[i]['loss'])
+	plt.plot(learning_rate, res[i]['loss'], 'o')
+	plt.title(f"Initialised Weights: {weights_init[i]}")
+	plt.xlabel("Learning Rate")
+	plt.ylabel("Optimised Loss")
+	plt.yscale("symlog")
+	plt.xticks(learning_rate)
+	pdf.savefig()
+	plt.close()
+pdf.close()
 
-plt.subplots_adjust(hspace=0.3)
-plt.show()
-
-
+# plot error surface and best result
 x = np.arange(-10.0, 10.0, 0.1)
 y = np.arange(-10.0, 10.0, 0.1)
 xx, yy = np.meshgrid(x,y)
 zz = loss_function([xx,yy])
 
-fig_2 = plt.figure()
-ax_21 = fig_2.add_subplot(111, projection='3d', azim=-40, elev=50)
-ax_21.plot_surface(xx, yy, zz, cmap='jet', alpha=0.4)
-ax_21.plot(weights_init[-1][0], weights_init[-1][1], loss_function(weights_init[-1]), 'ro')
-ax_21.plot(res[-1][4]['weights'][0], res[-1][4]['weights'][1], res[-1][4]['loss'], 'go')
+# optimal solution of the evaluation procedure
+idx_w = np.where(res[:][:]['loss'] == np.amin(res[:][:]['loss']))[0][0]
+idx_lr = np.where(res[:][:]['loss'] == np.amin(res[:][:]['loss']))[1][0]
+
+loss_opt = res[idx_w][idx_lr]['loss']
+weights_opt = res[idx_w][idx_lr]['weights']
+weights_start = weights_init[idx_w]
+
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d', azim=-40, elev=50)
+ax.plot_surface(xx, yy, zz, cmap='jet', alpha=0.4)
+ax.plot(weights_start[0], weights_start[1], loss_function(weights_start), 'ro')
+ax.plot(weights_opt[0],  weights_opt[1], loss_opt, 'go')
 plt.show()
-plt.savefig("Surface.pdf")
+pdf.close()
+
+
