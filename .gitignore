@@ -129,5 +129,6 @@ dmypy.json
 .pyre/
 
 /python
+/student
 *.pdf
 test.py
