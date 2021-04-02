@@ -108,13 +108,20 @@ class MultiOutput2LN:
 
 		return np.array(losses)
 
-	def apply_model(self, data):
-		H = self.__sigmoid(self.W1 @ np.transpose(data))
-		H[0,:] = 1.0
-		Y = self.W2 @ H
-		return Y
+	def evaluate(self, X, index, name, values=[1,-1]):
+		print("")
+		print(f"Evaluating {name}")
 
+		# considering the dropped categorical features
+		if(index > 8): index -= 4
 
+		for value in values:
+			x = X[X[:,index] == value]
+			_,y = self.__forward(x)
+			mean = np.mean(y, axis=1)
+			print(f"Average grades for {value} are {mean}")
+
+		
 # Preparing dataset (available at https://archive.ics.uci.edu/ml/datasets/Student+Performance#)
 # ---------------------------------------------------------
 df = pd.read_csv('student/student-mat.csv', sep=';')
@@ -144,7 +151,7 @@ learning_rate = 0.001
 epochs = 10000
 batchsize = 64
 
-pdf = PdfPages("MultiOutput_Net.pdf")
+pdf = PdfPages("Multi_Output_Regression_Net.pdf")
 
 # model instantiation and runs
 multi_output = MultiOutput2LN(X, T, K)
@@ -166,6 +173,13 @@ pdf.savefig()
 plt.close()
 pdf.close()
 
+# evaluation
+names = ["sex", "paid classes", "romantic relationship", "daily alcohol"]
+indices = [2, 18, 23, 27]
+values = [[1,-1], [1,-1], [1, -1], range(1,6)]
+
+for i in range(len(names)):
+	multi_output.evaluate(X=X, index=indices[i], name=names[i], values=values[i])
 
 
 
