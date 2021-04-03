@@ -129,6 +129,6 @@ dmypy.json
 .pyre/
 
 /python
-/student
+/datasets
 *.pdf
 test.py

@@ -124,7 +124,7 @@ class MultiOutput2LN:
 		
 # Preparing dataset (available at https://archive.ics.uci.edu/ml/datasets/Student+Performance#)
 # ---------------------------------------------------------
-df = pd.read_csv('student/student-mat.csv', sep=';')
+df = pd.read_csv('datasets/student/student-mat.csv', sep=';')
 # drop categorical values (according to task description)
 df = df.drop(df.iloc[:, 8:12].columns, axis=1)
 # change dtypes of columns according to task description
