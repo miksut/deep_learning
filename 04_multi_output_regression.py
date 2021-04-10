@@ -77,7 +77,7 @@ class MultiOutput2LN:
 			if self.prior_update is not None:
 				self.W1 += mu * self.prior_update[0]
 				self.W2 += mu * self.prior_update[1]
-		self.prior_update = [-eta * G1, -eta * G2]
+			self.prior_update = [-eta * G1, -eta * G2]
 
 		return loss
 
