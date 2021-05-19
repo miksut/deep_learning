@@ -1,8 +1,7 @@
 import torch
 from torch.utils.data import Dataset, DataLoader
-from torchvision.transforms import Compose, Resize, CenterCrop, ToTensor, ToPILImage
+from torchvision.transforms import Compose, Resize, CenterCrop, ToTensor, ToPILImage, Normalize
 import torchvision.models as models
-import matplotlib as plt
 import numpy as np
 import requests
 import zipfile
@@ -105,7 +104,7 @@ res = [0 for i in range(len(keys))]
 
 # Check for GPU availability (-> training procedure)
 device = "cuda" if torch.cuda.is_available() else "cpu"
-print(f"Using {device} device")
+#print(f"Using {device} device")
 
 # initialise transformations and dataset
 transformations = Compose([Resize(300), CenterCrop(224), ToTensor()])

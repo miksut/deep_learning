@@ -131,5 +131,7 @@ dmypy.json
 /python
 /datasets
 /data
+/stargan
 *.pdf
 test.py
+11_GAN_*
