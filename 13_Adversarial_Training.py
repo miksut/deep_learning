@@ -11,6 +11,7 @@ device = "cuda"
 epochs = 100
 learning_rate = 0.001
 path = "data/MNIST/"
+method = "FGS"
 # set seed for reproducibility
 torch.manual_seed(0)
 
@@ -80,7 +81,7 @@ class CNN(nn.Module):
 
 		# compute loss and gradient
 		Z = self.forward(X)
-		J = self.loss(Z, t)
+		J = self.loss(Z, T)
 		J.backward()
 
 		max_abs = torch.max(torch.abs(X.grad))
@@ -88,29 +89,48 @@ class CNN(nn.Module):
 		return X_adv
 
 
-# training function
+# testing/evaluation function
 # --------------------------------------
-def test_network(network):
+def eval_network(network, adv=False, method="FGS"):
 	# set modules in evaluation mode
 	network.eval()
+
 	test_loss, correct_clf = 0., 0.
 
-	# deactivating autograd engine
-	with torch.no_grad():
-		for x,t in loader_test:
-			x,t = x.to(device), t.to(device)
+	if adv==True:
+		correct_clf_adv = 0.
+		samples_adv = 0.
 
-			Z = network(x)
-			J_test = network.loss(Z, t)
+	for x,t in loader_test:
+		torch.set_grad_enabled(False)
+		x,t = x.to(device), t.to(device)
 
-			test_loss += J_test.type(torch.float).item()
-			correct_clf += (Z.argmax(dim=1) == t).type(torch.float).sum().item()
+		Z = network(x)
+		J_test = network.loss(Z, t)
 
-	# return avg. test loss and accuracy
-	return (test_loss/len(loader_test)), (correct_clf/len(loader_test.dataset))
+		test_loss += J_test.type(torch.float).item()
+		correct_clf += (Z.argmax(dim=1) == t).type(torch.float).sum().item()
 
-def test_network_adv(network, adv=False):
-	pass
+		if adv==True:
+			network.train()
+			torch.set_grad_enabled(True)
+			X_adv = network.FGS(x, t) if method=="FGS" else network.FGV(x, t)
+			network.eval()
+
+			# only use adversarial samples for correctly classified original samples
+			relevant_samples = (Z.argmax(dim=1) == t)
+			X_adv = X_adv[relevant_samples]
+
+			# compute logits and classify adversarial samples
+			Z_adv = network(X_adv)
+			correct_clf_adv += (Z_adv.argmax(dim=1) == t[relevant_samples]).type(torch.float).sum().item()
+			samples_adv += X_adv.shape[0]
+	
+	torch.set_grad_enabled(True)
+	if adv==False:
+		return (test_loss/len(loader_test)), (correct_clf/len(loader_test.dataset))
+	else:
+		return (correct_clf/len(loader_test.dataset)), (correct_clf_adv/samples_adv)
 
 
 # training function
@@ -140,7 +160,7 @@ def train_network():
 			print(f"\rEpoch: {epoch} --- Training Loss: {loss_total/len(loader_train)}")
 
 			# evaluate model on test dataset
-			test_loss, accuracy = test_network(network)
+			test_loss, accuracy = eval_network(network)
 			print(f"\rEpoch: {epoch} --- Test Loss: {test_loss:3.5f} --- Test Accuracy: {accuracy}")
 
 			if accuracy > accuracy_top:
@@ -161,6 +181,7 @@ def train_network():
 def load_model():
 	network = CNN()
 	network.load_state_dict(torch.load(path+"CNN_MNIST.model"))
+	print(f"Loaded model: {path}CNN_MNIST.model")
 	return network.to(device)
 
 
@@ -180,11 +201,10 @@ if __name__ == "__main__":
 
 	if args.generate == "True":
 		network = load_model()
+		acc, acc_adv = eval_network(network, adv=True, method=method)
 
-		for x,t in loader_test:
-			x, t = x.to(device), t.to(device)
+		print(f"Accuracy on test set using original samples: {acc*100} %")
+		print(f"Accuracy on test set using adversarial samples ({method}): {acc_adv*100} %")
 
-			network.FGS(x,t)
-			network.FGV(x,t)
 
-			break
+
