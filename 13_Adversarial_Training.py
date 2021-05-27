@@ -11,6 +11,8 @@ device = "cuda"
 epochs = 100
 learning_rate = 0.001
 path = "data/MNIST/"
+# set seed for reproducibility
+torch.manual_seed(0)
 
 
 # command line parser object
@@ -22,6 +24,7 @@ def command_line_options():
 	# adding arguments
 	parser.add_argument("-t", "--train", default=False, help="Train the model (without adversarial training)")
 	parser.add_argument("-a", "--train_adversarial", default=False, help="Adversarial model training")
+	parser.add_argument("-g", "--generate", default=False, help="Generating and evaluating adversarial samples")
 
 	return parser.parse_args()
 
@@ -52,15 +55,42 @@ class CNN(nn.Module):
 			nn.Flatten(),
 			nn.Linear(32*7*7, 10)
 		)
+		self.loss = nn.CrossEntropyLoss()
+		self.optimizer = torch.optim.SGD(self.parameters(), lr=learning_rate, momentum=0.9)
 
 	def forward(self, X):
 		logits = self.CNN_stack(X)
 		return logits
 
+	def FGS(self, X, T, alpha=0.3):
+		# enable gradient for input
+		X.requires_grad_(True)
+
+		# compute loss and gradient
+		Z = self.forward(X)
+		J = self.loss(Z, T)
+		J.backward()
+
+		X_adv = torch.clamp(X + alpha*(torch.sign(X.grad)), min=0., max=1.)
+		return X_adv
+
+	def FGV(self, X, T, alpha=0.6):
+		# enable gradient for input
+		X.requires_grad_(True)
+
+		# compute loss and gradient
+		Z = self.forward(X)
+		J = self.loss(Z, t)
+		J.backward()
+
+		max_abs = torch.max(torch.abs(X.grad))
+		X_adv = torch.clamp(X + alpha*(X.grad/max_abs), min=0., max=1.)
+		return X_adv
+
 
 # training function
 # --------------------------------------
-def test_network(network, loss_fct):
+def test_network(network):
 	# set modules in evaluation mode
 	network.eval()
 	test_loss, correct_clf = 0., 0.
@@ -71,7 +101,7 @@ def test_network(network, loss_fct):
 			x,t = x.to(device), t.to(device)
 
 			Z = network(x)
-			J_test = loss_fct(Z, t)
+			J_test = network.loss(Z, t)
 
 			test_loss += J_test.type(torch.float).item()
 			correct_clf += (Z.argmax(dim=1) == t).type(torch.float).sum().item()
@@ -79,15 +109,15 @@ def test_network(network, loss_fct):
 	# return avg. test loss and accuracy
 	return (test_loss/len(loader_test)), (correct_clf/len(loader_test.dataset))
 
+def test_network_adv(network, adv=False):
+	pass
+
 
 # training function
 # --------------------------------------
 def train_network():
 	accuracy_top = 0.
 	network = CNN().to(device)
-
-	loss = nn.CrossEntropyLoss()
-	optimizer = torch.optim.SGD(network.parameters(), lr=learning_rate, momentum=0.9)
 
 	# training
 	try:
@@ -97,20 +127,20 @@ def train_network():
 			for x,t in loader_train:
 				x,t = x.to(device), t.to(device)
 
-				optimizer.zero_grad()
+				network.optimizer.zero_grad()
 				Z = network(x)
-				J = loss(Z, t)
+				J = network.loss(Z, t)
 
 				# returns the averaged loss per batch
 				J.backward()
-				optimizer.step()
+				network.optimizer.step()
 
 				loss_total += J.cpu().detach().item()
 				print(f"\rBatch Loss: {float(J):3.5f}", end="")
 			print(f"\rEpoch: {epoch} --- Training Loss: {loss_total/len(loader_train)}")
 
 			# evaluate model on test dataset
-			test_loss, accuracy = test_network(network, loss)
+			test_loss, accuracy = test_network(network)
 			print(f"\rEpoch: {epoch} --- Test Loss: {test_loss:3.5f} --- Test Accuracy: {accuracy}")
 
 			if accuracy > accuracy_top:
@@ -126,9 +156,12 @@ def train_network():
 	return network
 
 
-
-
-
+# load existing model
+# --------------------------------------	
+def load_model():
+	network = CNN()
+	network.load_state_dict(torch.load(path+"CNN_MNIST.model"))
+	return network.to(device)
 
 
 # main functionality
@@ -145,5 +178,13 @@ if __name__ == "__main__":
 
 		network = train_network()
 
-		
+	if args.generate == "True":
+		network = load_model()
 
+		for x,t in loader_test:
+			x, t = x.to(device), t.to(device)
+
+			network.FGS(x,t)
+			network.FGV(x,t)
+
+			break
