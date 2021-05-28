@@ -103,6 +103,7 @@ def eval_network(network, adv=False, method="FGS"):
 		samples_adv = 0.
 
 	for x,t in loader_test:
+		# disabling autograd engine
 		torch.set_grad_enabled(False)
 		x,t = x.to(device), t.to(device)
 
@@ -125,13 +126,16 @@ def eval_network(network, adv=False, method="FGS"):
 	
 	torch.set_grad_enabled(True)
 	if adv==False:
+		# normal testing: return test loss and accuracy
 		return (test_loss/len(loader_test)), (correct_clf/len(loader_test.dataset))
 	else:
+		# testing with adv. samples: return accuracy on original samples and accuracy on adv. samples
 		return (correct_clf/len(loader_test.dataset)), (correct_clf_adv/samples_adv)
 
 
 # training function
 # --------------------------------------
+# train network either on original samples only or optionally perform adversarial training
 def train_network(adv=False, method="FGS"):
 	accuracy_top = 0.
 	network = CNN().to(device)
@@ -151,6 +155,7 @@ def train_network(adv=False, method="FGS"):
 				J.backward()
 
 				if adv==True:
+					# note: do not set gradients to zero -> accumulate (i.e. sum) them instead per batch
 					x_adv = network.FGS(x,t) if method=="FGS" else network.FGV(x,t)
 					Z_adv = network(x_adv)
 					J_adv = network.loss(Z_adv, t)
@@ -214,24 +219,26 @@ def load_model(adv=False):
 
 # main functionality
 # --------------------------------------
-
 if __name__ == "__main__":
 	import sys
 
 	args = command_line_options()
 
+	# training the model based only on original samples
 	if args.train == "True":
 		print(f"Train CNN without adversarial examples")
 		print(f"Epochs: {epochs} --- Batch size: {batch_size} --- Learning rate: {learning_rate}")
 
 		network = train_network()
 
+	# training the model based on original and adversarial samples (-> adversarial training)
 	if args.train_adversarial == "True":
 		print(f"Adversarial training of CNN")
 		print(f"Epochs: {epochs} --- Batch size: {batch_size} --- Learning rate: {learning_rate}")
 
 		network = train_network(adv=True, method=method)
 
+	# generating adversarial samples (based on model trained on original samples) and evaluate on test set
 	if args.generate == "True":
 		network = load_model()
 		acc, acc_adv = eval_network(network, adv=True, method=method)
@@ -239,6 +246,7 @@ if __name__ == "__main__":
 		print(f"Accuracy on test set using original samples: {acc*100} %")
 		print(f"Accuracy on test set using adversarial samples ({method}): {acc_adv*100} %")
 
+	# generating adversarial samples (based adversarially trained model) and evaluate on test set
 	if args.generate_adversarial == "True":
 		network = load_model(adv=True)
 		acc, acc_adv = eval_network(network, adv=True, method=method)
