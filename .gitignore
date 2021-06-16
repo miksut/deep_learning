@@ -136,3 +136,4 @@ dmypy.json
 *.pdf
 test.py
 11_GAN_*
+*.model
