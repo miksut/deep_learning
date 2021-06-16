@@ -238,7 +238,7 @@ if __name__ == "__main__":
 
 		network = train_network(adv=True, method=method)
 
-	# generating adversarial samples (based on model trained on original samples) and evaluate on test set
+	# generating adversarial samples (based on model trained on original samples) and evaluate
 	if args.generate == "True":
 		network = load_model()
 		acc, acc_adv = eval_network(network, adv=True, method=method)
@@ -246,7 +246,7 @@ if __name__ == "__main__":
 		print(f"Accuracy on test set using original samples: {acc*100} %")
 		print(f"Accuracy on test set using adversarial samples ({method}): {acc_adv*100} %")
 
-	# generating adversarial samples (based adversarially trained model) and evaluate on test set
+	# generating adversarial samples (based adversarially trained model) and evaluate
 	if args.generate_adversarial == "True":
 		network = load_model(adv=True)
 		acc, acc_adv = eval_network(network, adv=True, method=method)

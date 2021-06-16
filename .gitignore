@@ -131,6 +131,7 @@ dmypy.json
 /python
 /datasets
 /data
+/tmp
 /stargan
 *.pdf
 test.py
