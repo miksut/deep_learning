@@ -130,10 +130,11 @@ dmypy.json
 
 /python
 /datasets
-/data
+/data/*
+/results
 /tmp
 /stargan
 *.pdf
 test.py
-11_GAN_*
+/src/11_GAN_*
 *.model
