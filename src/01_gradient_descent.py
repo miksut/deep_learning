@@ -59,7 +59,7 @@ def gradient(w):
 # main
 # randomly initialize arguments in a given interval
 weights_init = rng.uniform(-10.0, 10.0, (5,2))
-learning_rate = np.array([1.0, 0.7, 0.5, 0.4, 0.3, 0.2, 0.1, 0.05])
+learning_rate = np.array([1.0, 0.5, 0.2, 0.1, 0.01, 0.001, 0.0001])
 
 gd = GradientDescent(loss_function, gradient, weights_init, learning_rate)
 res = gd.run_gd()
@@ -69,7 +69,7 @@ print(res)
 
 # Plotting
 # save evaluation results in a pdf file
-pdf = PdfPages("task01_evaluation.pdf")
+pdf = PdfPages("../results/task01_evaluation.pdf")
 
 for i in range(weights_init.shape[0]):
 	plt.plot(learning_rate, res[i]['loss'])
