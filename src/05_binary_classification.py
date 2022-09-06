@@ -40,7 +40,7 @@ class BinaryClassifierNet:
 
 		# yield the last batch if not emptoy
 		if batch:
-			yield self.X[batch], self.T[batch], True
+			yield self.X[batch], self.t[batch], True
 
 	def __sigmoid(self, exponent):
 		return 1.0 / (1.0 + np.exp(-exponent))
@@ -95,7 +95,7 @@ class BinaryClassifierNet:
 		return loss, accuracy
 
 	def sgd(self, learning_rate=0.001, epochs=100000, batchsize=64, mu=None):
-		print(f"Performing SGD with {epochs} epochs - eta={learning_rate}, B={batchsize}, mu={mu}")
+		print(f"\nPerforming SGD with {epochs} epochs - eta={learning_rate}, B={batchsize}, mu={mu}")
 		self.__initWeights()
 		losses = []
 		accuracies = []
@@ -122,35 +122,44 @@ t_bank = df_banknotes.iloc[:,-1].values
 X_spam = np.hstack((np.ones([df_spam.shape[0], 1]), df_spam.drop([58], axis=1).values))
 t_spam = df_spam.iloc[:,-1].values
 
+data = [(X_bank, t_bank, "Banknote Forgery"), (X_spam, t_spam, "Spam Classification")]
+
 
 # main
 # ---------------------------------------------------------
-datasets = 1
+datasets = 2
 K = 15
 learning_rate = [0.001]
 epochs = [1000]
-batchsize = [X_bank.shape[0]]
+batchsize = [64]
 losses = []
 accuracies = []
 
-bin_clf1 = BinaryClassifierNet(X_bank, t_bank, K)
-loss, acc = bin_clf1.sgd(learning_rate=learning_rate[0], epochs=epochs[0], batchsize=batchsize[0])
-losses.append(loss)
-accuracies.append(acc)
+for i in range(datasets):
+	bin_clf = BinaryClassifierNet(data[i][0], data[i][1], K)
+	loss, acc = bin_clf.sgd(learning_rate=learning_rate[0], epochs=epochs[0], batchsize=batchsize[0])
+	losses.append(loss)
+	accuracies.append(acc)
 
 pdf = PdfPages(root_directory / "results" / "Binary_Classifier_Net.pdf")
+colors = ["blue", "red"]
 
 # plots
 for dataset in range(datasets):
 	fig,ax = plt.subplots()
-	ax.plot(np.arange(losses[dataset].shape[0]), losses[dataset], '-', color="blue")
+	ax.plot(np.arange(losses[dataset].shape[0]), losses[dataset], '-', color=colors[0])
 	ax.set_xlabel("Epoch")
 	ax.set_ylabel("Loss")
+	ax.yaxis.label.set_color(colors[0])
+	ax.tick_params(axis='y', colors=colors[0])
 	ax.set_xscale("log")
+	ax.set_title(data[dataset][2])
 
 	ax2 = ax.twinx()
-	ax2.plot(np.arange(accuracies[dataset].shape[0]), accuracies[dataset], '-', color="red")
+	ax2.plot(np.arange(accuracies[dataset].shape[0]), accuracies[dataset], '-', color=colors[1])
 	ax2.set_ylabel("Accuracy")	
+	ax2.yaxis.label.set_color(colors[1])
+	ax2.tick_params(axis='y', colors=colors[1])
 
 	pdf.savefig()
 	plt.show()
