@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
+from pathlib import Path
 from sklearn.datasets import load_iris, load_digits
 
 
@@ -41,7 +42,7 @@ class CategoricalClassifierNet:
 
 		# yield last batch if not empty
 		if(batch):
-			yield self.X[batch], self.T[batch], True
+			yield self.X[batch], self.t[batch], True
 
 	# auxiliary function used by the function __computeAccuracy() in order to encode the predictions
 	# note: function is applied to a 1D-array (axis-wise)
@@ -114,7 +115,7 @@ class CategoricalClassifierNet:
 		return loss, accuracy
 
 	def sgd(self, learning_rate=0.001, epochs=10000, batchsize=64, mu=None):
-		print(f"Performing SGD with {epochs} epochs - eta={learning_rate}, B={batchsize}, mu={mu}")
+		print(f"\nPerforming SGD with {epochs} epochs - eta={learning_rate}, B={batchsize}, mu={mu}")
 		self.__initWeights()
 		losses = []
 		accuracies = []
@@ -151,38 +152,46 @@ X_digits = np.hstack((np.ones([data_digits.data.shape[0], 1]), data_digits.data)
 t_digits_orig = data_digits.target
 t_digits_enc = OneHotEncoder.encode(t_digits_orig)
 
-
+data = [(X_iris, t_iris_enc, "Iris Dataset"), (X_digits, t_digits_enc, "Digits Dataset")]
 
 
 # main
 # ---------------------------------------------------------
-datasets = 1
+datasets = 2
 K = [150]
 learning_rate = [0.001]
-epochs = [100000]
-batchsize = [X_iris.shape[0]]
-mu = [0.5]
+epochs = [10000]
+batchsize = [data[0][0].shape[0], data[1][0].shape[0]]
+mu = [0.9]
 losses = []
 accuracies = []
+root_directory = Path(__file__).parent.parent.resolve()
 
-cat_clf_iris = CategoricalClassifierNet(X_iris, t_iris_enc, K[0])
-loss, accuracy = cat_clf_iris.sgd(learning_rate=learning_rate[0], epochs=epochs[0], batchsize=batchsize[0], mu=mu[0])
-losses.append(loss)
-accuracies.append(accuracy)
+for dataset in range(datasets):
+	cat_clf = CategoricalClassifierNet(data[dataset][0], data[dataset][1], K[0])
+	loss, accuracy = cat_clf.sgd(learning_rate=learning_rate[0], epochs=epochs[0], batchsize=batchsize[dataset], mu=mu[0])
+	losses.append(loss)
+	accuracies.append(accuracy)
 
-pdf = PdfPages("Categorical_Classifier_Net.pdf")
+pdf = PdfPages(root_directory / "results" / "Categorical_Classifier_Net.pdf")
+colors = ['blue', 'red']
 
 # plots
 for dataset in range(datasets):
 	fig, ax = plt.subplots()
-	ax.plot(np.arange(losses[dataset].shape[0]), losses[dataset], '-', color="blue")
+	ax.plot(np.arange(losses[dataset].shape[0]), losses[dataset], '-', color=colors[0])
 	ax.set_xlabel("Epoch")
 	ax.set_ylabel("Loss")
 	ax.set_xscale("log")
+	ax.yaxis.label.set_color(colors[0])
+	ax.tick_params(axis='y', colors=colors[0])
+	ax.set_title(data[dataset][2])
 
 	ax2 = ax.twinx()
-	ax2.plot(np.arange(accuracies[dataset].shape[0]), accuracies[dataset], '-', color="red")
+	ax2.plot(np.arange(accuracies[dataset].shape[0]), accuracies[dataset], '-', color=colors[1])
 	ax2.set_ylabel("Accuracy")
+	ax2.yaxis.label.set_color(colors[1])
+	ax2.tick_params(axis='y', colors=colors[1])
 
 	pdf.savefig()
 	plt.show()

@@ -130,14 +130,14 @@ data = [(X_bank, t_bank, "Banknote Forgery"), (X_spam, t_spam, "Spam Classificat
 datasets = 2
 K = 15
 learning_rate = [0.001]
-epochs = [1000]
-batchsize = [64]
+epochs = [10000]
+batchsize = [data[0][0].shape[0], data[1][0].shape[0]]
 losses = []
 accuracies = []
 
 for i in range(datasets):
 	bin_clf = BinaryClassifierNet(data[i][0], data[i][1], K)
-	loss, acc = bin_clf.sgd(learning_rate=learning_rate[0], epochs=epochs[0], batchsize=batchsize[0])
+	loss, acc = bin_clf.sgd(learning_rate=learning_rate[0], epochs=epochs[0], batchsize=batchsize[i])
 	losses.append(loss)
 	accuracies.append(acc)
 
