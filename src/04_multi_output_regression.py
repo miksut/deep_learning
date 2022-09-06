@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from pathlib import Path
 import matplotlib.pyplot as plt
 from scipy.special import expit
 from matplotlib.backends.backend_pdf import PdfPages
@@ -124,7 +125,8 @@ class MultiOutput2LN:
 		
 # Preparing dataset (available at https://archive.ics.uci.edu/ml/datasets/Student+Performance#)
 # ---------------------------------------------------------
-df = pd.read_csv('../data/student/student-mat.csv', sep=';')
+root_directory = Path(__file__).parent.parent.resolve()
+df = pd.read_csv(root_directory / "data" / "student" /"student-mat.csv", sep=';')
 # drop categorical values (according to task description)
 df = df.drop(df.iloc[:, 8:12].columns, axis=1)
 # change dtypes of columns according to task description
@@ -151,7 +153,7 @@ learning_rate = 0.001
 epochs = 10000
 batchsize = 64
 
-pdf = PdfPages("../results/Multi_Output_Regression_Net.pdf")
+pdf = PdfPages(root_directory / "results" / "Multi_Output_Regression_Net.pdf")
 
 # model instantiation and runs
 multi_output = MultiOutput2LN(X, T, K)

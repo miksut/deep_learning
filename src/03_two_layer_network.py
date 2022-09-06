@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
+from pathlib import Path
 
 # global variables and settings
 rng = np.random.default_rng(20)
@@ -85,7 +86,8 @@ class ParamOptimiser:
 
 	def optimise(self, name):
 		filename = name
-		pdf = PdfPages("../results/" + name + ".pdf")
+		root_directory = Path(__file__).parent.parent.resolve()
+		pdf = PdfPages(root_directory / "results" / str(name + ".pdf"))
 		X_plot = self.dataCreator.plotData(self.low, self.high, 1000)
 
 

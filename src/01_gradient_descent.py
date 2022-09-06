@@ -3,6 +3,7 @@ import math
 import matplotlib.pyplot as plt
 import scipy.linalg
 from matplotlib.backends.backend_pdf import PdfPages
+from pathlib import Path
 
 
 # global variables
@@ -69,7 +70,8 @@ print(res)
 
 # Plotting
 # save evaluation results in a pdf file
-pdf = PdfPages("../results/task01_evaluation.pdf")
+root_directory = Path(__file__).parent.parent.resolve()
+pdf = PdfPages(root_directory / "results" /"task01_evaluation.pdf")
 
 for i in range(weights_init.shape[0]):
 	plt.plot(learning_rate, res[i]['loss'])

@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from pathlib import Path
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
@@ -111,8 +112,9 @@ class BinaryClassifierNet:
 
 # preparing datasets
 # ---------------------------------------------------------
-df_banknotes = pd.read_csv("datasets/data_banknote_authentication.txt", sep=',', names=['Variance', 'Skewness', 'Curtosis', 'Entropy', 'Label'])
-df_spam = pd.read_csv("datasets/spambase/spambase.data", sep=',', names=np.arange(1,59))
+root_directory = Path(__file__).parent.parent.resolve()
+df_banknotes = pd.read_csv(root_directory / "data" / "banknote" / "data_banknote_authentication.txt", sep=',', names=['Variance', 'Skewness', 'Curtosis', 'Entropy', 'Label'])
+df_spam = pd.read_csv(root_directory / "data" / "spambase" / "spambase.data", sep=',', names=np.arange(1,59))
 
 X_bank = np.hstack((np.ones([df_banknotes.shape[0], 1]), df_banknotes.drop(['Label'], axis=1).values))
 t_bank = df_banknotes.iloc[:,-1].values
@@ -136,7 +138,7 @@ loss, acc = bin_clf1.sgd(learning_rate=learning_rate[0], epochs=epochs[0], batch
 losses.append(loss)
 accuracies.append(acc)
 
-pdf = PdfPages("Binary_Classifier_Net.pdf")
+pdf = PdfPages(root_directory / "results" / "Binary_Classifier_Net.pdf")
 
 # plots
 for dataset in range(datasets):
