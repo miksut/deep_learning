@@ -8,12 +8,12 @@ This repository hosts some implementations of prominent Deep Learning concepts. 
 
    <img
     src="/imgs/01_gd_view1.png"
-    width="250"
+    style="width: 30vw"
     align="left">
     
     <img
     src="/imgs/01_gd_view2.png"
-    width="250">
+    style="width: 30vw">
 
 
 
