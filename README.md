@@ -8,12 +8,12 @@ This repository hosts some implementations of prominent Deep Learning concepts. 
 
    <img
     src="/imgs/01_gd_view1.png"
-    width="200"
+    height="200"
     align="left">
     
     <img
     src="/imgs/01_gd_view2.png"
-    width="200">
+    height="200">
  
 - `02_regression_gd.py`: Starting from 1-dimensional noisy linear training data, a linear unit $y = w_0 + w_1 \cdot x$, and its loss function $\mathcal{J}\_{\vec w}(X) = \frac{1}{N} \Sigma_{n=1}^N(y^{n} - t^{n})^{2}$, the script implements gradient descent. The idea is to fit a line to the generated data.
 
@@ -26,8 +26,15 @@ This repository hosts some implementations of prominent Deep Learning concepts. 
 - `04_multi_output_regression.py`: Using the [Student Performance Data Set](https://archive.ics.uci.edu/ml/datasets/Student+Performance#), a multi-target network is trained to predict three course grades from various data features such as sex, paid classes, romantic relationship, or daily alcohol. Furthermore, concepts such as batch processing and stochastic gradient descent (with and without using a momentum term) are implemented and explored. The following figure illustrates the loss of the multi-target network during training as a function of the number of training epochs for different gradient descent algorithms.
 
    <img
-    src="/imgs/04_multi_output_regression.pdf"
+    src="/imgs/04_multi_output_regression.png"
     height="200">
+
+- `05_binary_classification.py`: A binary classifier is trained on the [Banknote Authentication Data Set](https://archive.ics.uci.edu/ml/datasets/banknote+authentication) as well as on the [Spambase Data Set](https://archive.ics.uci.edu/ml/datasets/spambase). The goal is to train a classifier that achieves 100% accuracy on the banknote dataset (i.e., to detect all forged banknotes) and the highest possible accuracy on the spambase dataset (i.e., to detect as many spam mails as possible). The figure below illustrates the progression of the loss and the accuracy during the training procedure for the banknote dataset.
+
+   <img
+    src="/imgs/05_bin_clf_banknote.png"
+    height="200">
+
 
  
  
