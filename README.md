@@ -8,12 +8,25 @@ This repository hosts some implementations of prominent Deep Learning concepts. 
 
    <img
     src="/imgs/01_gd_view1.png"
-    style="width: 30vw"
+    width="200"
     align="left">
     
     <img
     src="/imgs/01_gd_view2.png"
-    style="width: 30vw">
+    width="200">
+ 
+- `02_regression_gd.py`: Starting from 1-dimensional noisy linear training data, a linear unit $y = w_0 + w_1 \cdot x$, and its loss function $\mathcal{J}\_{\vec w}(X) = \frac{1}{N} \Sigma_{n=1}^N(y^{n} - t^{n})^{2}$, the script implements gradient descent. The idea is to fit a line to the generated data.
+
+- `03_two_layer_network.py`: Implementation of a 2-layer network (using a logistic activation function) that operates on one input $x$ and produces one output $y$. The implementation comprises functions to compute the loss and the gradient for a given training dataset, as well as a function to perform iterative gradient descent. The goal is to train a network that fits to the training data. The following figure shows a possible result of this fitting process. Considering the left plot, it becomes clear that the network learned a function (i.e., the blue line) that well approximates the training data (i.e., the red 'x'). The right plot exemplifies how the network loss progressed as a function of the number of training epochs.
+
+   <img
+    src="/imgs/03_two_layer_network.png"
+    width="200"
+    align="left">
+
+
+ 
+ 
 
 
 
