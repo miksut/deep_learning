@@ -26,7 +26,7 @@ This repository hosts some implementations of prominent Deep Learning concepts. 
 - `04_multi_output_regression.py`: Using the [Student Performance Data Set](https://archive.ics.uci.edu/ml/datasets/Student+Performance#), a multi-target network is trained to predict three course grades from various data features such as sex, paid classes, romantic relationship, or daily alcohol. Furthermore, concepts such as batch processing and stochastic gradient descent (with and without using a momentum term) are implemented and explored. The following figure illustrates the loss of the multi-target network during training as a function of the number of training epochs for different gradient descent algorithms.
 
    <img
-    src="/imgs/04_multi_output_regression.pdf"
+    src="/imgs/04_multi_output_regression.png"
     height="200">
 
  
