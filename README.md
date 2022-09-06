@@ -23,20 +23,30 @@ This repository hosts some implementations of prominent Deep Learning concepts. 
     src="/imgs/03_two_layer_network.png"
     height="200">
 
-- `04_multi_output_regression.py`: Using the [Student Performance Data Set](https://archive.ics.uci.edu/ml/datasets/Student+Performance#), a multi-target network is trained to predict three course grades from various data features such as sex, paid classes, romantic relationship, or daily alcohol. Furthermore, concepts such as batch processing and stochastic gradient descent (with and without using a momentum term) are implemented and explored. The following figure illustrates the loss of the multi-target network during training as a function of the number of training epochs for different gradient descent algorithms.
+- `04_multi_output_regression.py`: Using the [Student Performance Data Set](https://archive.ics.uci.edu/ml/datasets/Student+Performance#), a multi-target network is trained to predict three course grades from various data features such as sex, paid classes, romantic relationship, or daily alcohol. Furthermore, concepts such as batch processing and gradient descent (with and without using a momentum term) are implemented and explored. The following figure illustrates the loss of the multi-target network during training as a function of the number of training epochs for different gradient descent algorithms.
 
    <img
     src="/imgs/04_multi_output_regression.png"
     height="200">
 
-- `05_binary_classification.py`: A binary classifier is trained on the [Banknote Authentication Data Set](https://archive.ics.uci.edu/ml/datasets/banknote+authentication) as well as on the [Spambase Data Set](https://archive.ics.uci.edu/ml/datasets/spambase). The goal is to train a classifier that achieves 100% accuracy on the banknote dataset (i.e., to detect all forged banknotes) and the highest possible accuracy on the spambase dataset (i.e., to detect as many spam mails as possible). The figure below illustrates the progression of the loss and the accuracy during the training procedure for the banknote dataset.
+- `05_binary_classification.py`: A binary classifier is trained on the [Banknote Authentication Data Set](https://archive.ics.uci.edu/ml/datasets/banknote+authentication) as well as on the [Spambase Data Set](https://archive.ics.uci.edu/ml/datasets/spambase). The goal is to train two classifiers via stochastic gradient descent. In addition, the classifier trained on the banknote dataset should achieve a training accuracy of 100% (i.e., detecting all forged banknotes). The figure below illustrates the progression of the loss and the accuracy during the training procedure for the banknote dataset.
 
    <img
     src="/imgs/05_bin_clf_banknote.png"
     height="200">
 
+- `06_categorical_classification.py`: A categorical classifier is trained on the [Iris](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_iris.html) dataset as well as on the [Digits](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_digits.html) dataset. The goal is to train two classifiers via stochastic gradient descent. The figure below illustrates the progression of the loss and the accuracy during the training procedure for both datasets.
 
- 
+   <img
+    src="/imgs/06_cat_clf_iris.png"
+    height="200"
+    align="left">
+    
+   <img
+    src="/imgs/06_cat_clf_digits.png"
+    height="200">
+
+
  
 
 
