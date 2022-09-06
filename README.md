@@ -45,6 +45,10 @@ This repository hosts some implementations of prominent Deep Learning concepts. 
    <img
     src="/imgs/06_cat_clf_digits.png"
     height="200">
+    
+- `07_PyTorch_catClf.py`: A two-layer neural network is trained and tested on the [MNIST](https://pytorch.org/vision/main/generated/torchvision.datasets.MNIST.html) dataset, using the [PyTorch](https://pytorch.org/) framework. The network is trained using categorical cross-entropy.
+
+- `08_CN_MNIST.py`: A convolutional neural network (CNN) is trained and tested on the MNIST dataset, using the PyTorch framework. The CNN comprises convolutional layers, pooling layers, as well as a fully-connected layer and is trained using categorical cross-entropy.
 
 
  
