@@ -21,7 +21,7 @@ This repository hosts some implementations of prominent Deep Learning concepts. 
 
    <img
     src="/imgs/03_two_layer_network.png"
-    width="200"
+    height="200"
     align="left">
 
 
