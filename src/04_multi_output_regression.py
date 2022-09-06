@@ -170,6 +170,7 @@ plt.yscale("log")
 plt.legend(loc="upper right", fontsize="medium")
 
 pdf.savefig()
+plt.show()
 plt.close()
 pdf.close()
 
