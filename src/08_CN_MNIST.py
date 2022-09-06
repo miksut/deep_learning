@@ -6,6 +6,7 @@ from torchvision.transforms import ToTensor, Lambda, Compose
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.backends.backend_pdf import PdfPages
+from pathlib import Path
 
 # preparing training and test dataset
 training_data = MNIST(root='data', download=True, train=True, transform=ToTensor())
@@ -109,18 +110,23 @@ for epoch in range(epochs):
 print(f"Highest accuracy in epoch {accuracy_max[1]+1}: {accuracy_max[0]}% \n")
 
 # Plotting
-pdf = PdfPages("08_PyTorch_CNN.pdf")
+root_directory = Path(__file__).parent.parent.resolve()
+pdf = PdfPages(root_directory / "results" / "08_PyTorch_CNN.pdf")
 fig, ax = plt.subplots()
 ax.plot(np.arange(epochs)+1., losses, '-', color='blue')
 ax.set_xscale("log")
 ax.set_xlabel("Epoch")
 ax.set_ylabel("Avg. Loss")
-ax.set_title("Loss and Accuracy Progression")
+ax.yaxis.label.set_color("blue")
+ax.tick_params(axis='y', colors="blue")
+ax.set_title("Loss and Accuracy Progression on MNIST")
 
 ax2 = ax.twinx()
 ax2.plot(np.arange(epochs)+1., accuracies, '-', color='red')
 ax2.scatter(accuracy_max[1]+1, accuracy_max[0], color='red')
 ax2.set_ylabel("Accuracy")
+ax2.yaxis.label.set_color("red")
+ax2.tick_params(axis='y', colors="red")
 
 pdf.savefig()
 plt.show()
