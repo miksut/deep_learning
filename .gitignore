@@ -135,7 +135,6 @@ dmypy.json
 /results
 /tmp
 /stargan
-*.pdf
 test.py
 /src/11_GAN_*
 *.model

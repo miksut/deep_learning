@@ -124,7 +124,7 @@ class MultiOutput2LN:
 		
 # Preparing dataset (available at https://archive.ics.uci.edu/ml/datasets/Student+Performance#)
 # ---------------------------------------------------------
-df = pd.read_csv('datasets/student/student-mat.csv', sep=';')
+df = pd.read_csv('../data/student/student-mat.csv', sep=';')
 # drop categorical values (according to task description)
 df = df.drop(df.iloc[:, 8:12].columns, axis=1)
 # change dtypes of columns according to task description
@@ -151,7 +151,7 @@ learning_rate = 0.001
 epochs = 10000
 batchsize = 64
 
-pdf = PdfPages("Multi_Output_Regression_Net.pdf")
+pdf = PdfPages("../results/Multi_Output_Regression_Net.pdf")
 
 # model instantiation and runs
 multi_output = MultiOutput2LN(X, T, K)
