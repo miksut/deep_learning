@@ -35,7 +35,7 @@ This repository hosts some implementations of prominent Deep Learning concepts. 
     src="/imgs/05_bin_clf_banknote.png"
     height="200">
 
-- `06_categorical_classification.py`: A categorical classifier is trained on the [Iris](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_iris.html) dataset as well as on the [Digits](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_digits.html) dataset. The goal is to train two classifiers via stochastic gradient descent. The figure below illustrates the progression of the loss and the accuracy during the training procedure for both datasets.
+- `06_categorical_classification.py`: A categorical classifier is trained on the [Iris](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_iris.html) dataset as well as on the [Digits](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_digits.html) dataset. The goal is to train two classifiers via stochastic gradient descent. The figures below illustrate the progression of the loss and the accuracy during the training procedure on both datasets.
 
    <img
     src="/imgs/06_cat_clf_iris.png"
