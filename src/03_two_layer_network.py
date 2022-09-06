@@ -85,7 +85,7 @@ class ParamOptimiser:
 
 	def optimise(self, name):
 		filename = name
-		pdf = PdfPages(name + ".pdf")
+		pdf = PdfPages("../results/" + name + ".pdf")
 		X_plot = self.dataCreator.plotData(self.low, self.high, 1000)
 
 
@@ -110,6 +110,7 @@ class ParamOptimiser:
 					print("Check")
 
 				pdf.savefig()
+				plt.show()
 				plt.close()
 		pdf.close()
 
