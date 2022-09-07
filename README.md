@@ -67,7 +67,10 @@ This repository hosts some implementations of prominent Deep Learning concepts. 
    15/15 | 15/15 | 14/15 | 15/15 | 14/15 | 15/15 | 5/15 | 13/15 | 13/15 | 9/15 | 10/15
 ---
 
-- `10_open_set.py`:
+- `10_open_set.py`: This script deals with the concept of open set recognition. As introduced by [Scheirer et al.](https://ieeexplore.ieee.org/document/6365193), a classifier that performs open set classification additionally encounters test samples from classes that have not been present during training (i.e., the unknown classes). Therefore, the tasks of an open set classifier are to correctly classify samples from known classes (i.e., classes that the classifier has been trained on) and to reject samples from unknown classes. Based on a loss function and an evaluation metric proposed by [Dhamija et al.](https://dl.acm.org/doi/10.5555/3327546.3327590), this script trains and evaluates a CNN on an open set partition of the MNIST dataset. 
+---
+
+- `11_GAN.py`: 
 
  
 
