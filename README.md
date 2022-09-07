@@ -70,8 +70,38 @@ This repository hosts some implementations of prominent Deep Learning concepts. 
 - `10_open_set.py`: This script deals with the concept of open set recognition. As introduced by [Scheirer et al.](https://ieeexplore.ieee.org/document/6365193), a classifier that performs open set classification additionally encounters test samples from classes that have not been present during training (i.e., the unknown classes). Therefore, the tasks of an open set classifier are to correctly classify samples from known classes (i.e., classes that the classifier has been trained on) and to reject samples from unknown classes. Based on a loss function and an evaluation metric proposed by [Dhamija et al.](https://dl.acm.org/doi/10.5555/3327546.3327590), this script trains and evaluates a CNN on an open set partition of the MNIST dataset. 
 ---
 
-- `11_GAN.py`: 
+- `11_GAN.py`: This script explores some of the capabilities of StarGAN, a generative adversarial network introduced by [Choi et al.](https://openaccess.thecvf.com/content_cvpr_2018/html/Choi_StarGAN_Unified_Generative_CVPR_2018_paper.html) in 2018. Concretely, the generator is used to manipulate some facial attributes of (own) image portraits.
 
+   In order to run the script, some preparations are necessary. Specifically, the [code](https://github.com/yunjey/stargan) as provided by the authors as well as a pretrained generator must be downloaded. For more information on the capabilities and use of StarGAN, refer to the author's GitHub repository. The following instructions assume that a console is opened in the **root** directory of this project.
+
+   ```
+   $ cd src
+   $ git clone https://github.com/yunjey/stargan      # download the repository
+   
+   $ cd stargan
+   $ bash ./download.sh pretrained-celeba-128x128     # download pretrained model, alternatively inspect download.sh
+   ```
+   
+   Now, open the script `11_GAN.py` and configure the variables specified in the section "README". Finally, run the script to generate image portraits with manipulated facial attributes "Black_Hair", "Blond_Hair", "Brown_Hair", "Male", and "Young".
+---
+
+- `12_RNN.py`: Training of a simple recurrent neural network (RNN) on [Shakespeare's sonnets](https://en.wikipedia.org/wiki/Shakespeare%27s_sonnets). The dataset is available [here](https://github.com/brunoklein99/deep-learning-notes/blob/master/shakespeare.txt) (no manual download necessary, script handles download automatically). After the training procedure, given a seeding text (e.g., "moth"), the network can then be used to generate text. The following commands illustrate how to train the network and subsequently use it for text generation. 
+
+   ```
+   $ python .\src\12_RNN.py train      # train the RNN (assumption: console opened in root folder of this project)
+   
+   $ python .\src\12_RNN.py best moth  # use seeding text "moth" and append 80 additional characters based on most probable successor (i.e., argument "best")
+   ```
+   Below, you can find an exemplary output of an RNN that has been trained for 50 epochs:
+   
+   ```   
+   $ python .\src\12_RNN.py best deep
+   deep -> "deep on sightless eyer drow, nor drow n weattes belter than time wastes life, thy br"
+   ```
+---
+
+
+   
  
 
 
