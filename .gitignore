@@ -129,12 +129,10 @@ dmypy.json
 .pyre/
 
 /python
-/datasets
 /data/*
 !/data/*.md
 /results
-/tmp
+/src/stargan
 /stargan
-test.py
 /src/11_GAN_*
 *.model

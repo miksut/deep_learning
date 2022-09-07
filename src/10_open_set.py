@@ -1,3 +1,4 @@
+from pathlib import Path
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
@@ -5,7 +6,7 @@ from torchvision.datasets import MNIST
 from torchvision.transforms import ToTensor
 import numpy as np
 
-# global variabls
+# global variables
 # --------------------------------------
 threshold = 0.5
 torch.manual_seed(0)
@@ -125,10 +126,11 @@ class Convolutional(torch.nn.Module):
 		return self.fc2(self.activation(self.fc1(a)))
 
 # training and test set
-train_set = MNIST(root='tmp', train=True, download=True, transform=ToTensor())
+root_directory = Path(__file__).parent.parent.resolve()
+train_set = MNIST(root=root_directory / "data" / "MNIST" / "raw", train=True, download=True, transform=ToTensor())
 train_loader = DataLoader(train_set, shuffle=True, batch_size=32)
 
-test_set = MNIST(root='tmp', train=False, download=True, transform=ToTensor())
+test_set = MNIST(root=root_directory / "data" / "MNIST" / "raw", train=False, download=True, transform=ToTensor())
 test_loader = DataLoader(test_set, shuffle=True, batch_size=32)
 
 #instantiate network, loss, and optimizer
@@ -180,5 +182,5 @@ for epoch in range(100):
 					nuu += 1
 
 	# print epoch and metrics 
-	print(f"Epoch {epoch}; test known: {k/nk*100.:1.2f} %, known unknown: {ku/nku*100.:1.2f} %, unknown unknown: {uu/nuu*100.:1.2f} %; average confidence: {conf/len(test_set):1.5f}")
+	print(f"Epoch {epoch+1}; test known: {k/nk*100.:1.2f} %, known unknown: {ku/nku*100.:1.2f} %, unknown unknown: {uu/nuu*100.:1.2f} %; average confidence: {conf/len(test_set):1.5f}")
 	print()

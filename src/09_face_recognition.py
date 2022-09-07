@@ -7,6 +7,7 @@ import requests
 import zipfile
 import os
 from os.path import exists
+from pathlib import Path
 from PIL import Image
 import types
 from scipy.spatial.distance import euclidean
@@ -14,18 +15,19 @@ from scipy.spatial.distance import euclidean
 
 # Preparing the raw dataset
 # --------------------------------------
-path = "data/Faces/yalefaces"
+root_directory = Path(__file__).parent.parent.resolve()
+path = root_directory / "data" / "Faces" / "yalefaces"
 file_ending = ".zip"
 
-if not exists(path + file_ending):
+if not exists(path / file_ending):
 	url = "http://vision.ucsd.edu/datasets/yale_face_dataset_original/yalefaces.zip"
 	req = requests.get(url, allow_redirects=True)
-	open(path + file_ending, "wb").write(req.content)
+	open(path / file_ending, "wb").write(req.content)
 
-	zip_file = path + file_ending
+	zip_file = path / file_ending
 	try:
 		with zipfile.ZipFile(zip_file, "r") as z:
-			z.extractall(path + "/..")
+			z.extractall(path / "/..")
 			print("Unzipping successful")
 
 	except:
@@ -34,18 +36,18 @@ if not exists(path + file_ending):
 # Removing unnecessary files from the raw dataset and enforcing consistent naming
 files_del = ["Readme.txt", "Subject01.glasses.gif"]
 for file in files_del:
-	if exists(path + "/" + file):
-		os.remove(path + "/" + file)
+	if exists(path / file):
+		os.remove(path / file)
 
-if exists(path + "/" + "subject01.gif"):
-	os.rename(path + "/" + "subject01.gif", path + "/" + "subject01.centerlight")
+if exists(path / "subject01.gif"):
+	os.rename(path / "subject01.gif", path / "subject01.centerlight")
 
 
 # Dedicated class for the dataset
 # --------------------------------------
 class FaceDataset(Dataset):
 	def __init__(self, root, transform=None):
-		self.root = root
+		self.root = str(root)
 		self.transform = transform
 		self.imageNames = next(os.walk(root))[2]
 
@@ -104,7 +106,7 @@ res = [0 for i in range(len(keys))]
 
 # Check for GPU availability (-> training procedure)
 device = "cuda" if torch.cuda.is_available() else "cpu"
-#print(f"Using {device} device")
+print(f"Using {device} device")
 
 # initialise transformations and dataset
 transformations = Compose([Resize(300), CenterCrop(224), ToTensor()])

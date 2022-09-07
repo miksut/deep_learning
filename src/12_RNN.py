@@ -2,6 +2,7 @@ import torch
 import numpy as np
 import os
 from os.path import exists
+from pathlib import Path
 import requests
 import collections
 from sklearn.preprocessing import OneHotEncoder
@@ -12,24 +13,25 @@ from sklearn.preprocessing import OneHotEncoder
 batch_size = 256
 learning_rate = 0.001
 seq_length = 20
-epochs = 100
+epochs = 50
 device = torch.device("cuda")
 
 
 # Downloading the raw dataset
 # --------------------------------------
-path = "data/Shakespeare/"
-file_name = "shakespeare"
-file_ending = ".txt"
+root_directory = Path(__file__).parent.parent.resolve()
+path = root_directory / "data" / "Shakespeare"
+path.mkdir(parents=True, exist_ok=True)
+file_name = "shakespeare.txt"
 
-if not exists(path + file_name + file_ending):
+if not exists(path / file_name):
 	url = "https://raw.githubusercontent.com/brunoklein99/deep-learning-notes/master/shakespeare.txt"
 	response = requests.get(url, allow_redirects=True)
 
-	with open(path + file_name + file_ending, 'w') as file_out:
+	with open(path / file_name, 'w') as file_out:
 		file_out.write(response.text)
 
-	print(f"Content written into {path+file_name+file_ending}")
+	print(f"Content written into {path / file_name}")
 
 
 # Input processing
@@ -37,7 +39,7 @@ if not exists(path + file_name + file_ending):
 # NOTE: Consider earlier commit for an alternative input processing (e.g. using re, replace(), etc.)
 characters = set()
 
-with open(path + file_name + file_ending, 'r') as file:
+with open(path / file_name, 'r') as file:
 	for line in file:
 		# note: rstrip() removes all trailing characters at the end of the line
 		for el in line.lower().rstrip():
@@ -122,7 +124,7 @@ def train_network():
 	# X and T as lists of np arrays
 	X, T = [], []
 
-	with open(path + file_name + file_ending, 'r') as file:
+	with open(path / file_name, 'r') as file:
 		for line in file:
 			# ignoring empty lines
 			if not line.rstrip():
@@ -142,6 +144,9 @@ def train_network():
 
 	# training
 	try:
+		loss_opt = float('inf')
+		epoch_opt = None
+
 		for epoch in range(epochs):
 			# measuring training loss (no validation set)
 			loss_total = 0.
@@ -158,19 +163,24 @@ def train_network():
 				# add up total loss
 				loss_total += J.cpu().detach().item()
 				print(f"\rLoss: {float(J)/t.shape[0]: 3.5f}", end="")
-			print(f"\rEpoch: {epoch} -- Loss: {loss_total/len(dataset)}")
+			print(f"\rEpoch: {epoch+1} -- Loss: {loss_total/len(dataset)}")
 
-			# save model after each epoch
-			torch.save(network.state_dict(), path+"text.model")
+			# save model
+			if(loss_total < loss_opt):
+				loss_opt = loss_total
+				epoch_opt = epoch+1
+				torch.save(network.state_dict(), path / "text.model")
 
 	except KeyboardInterrupt:
 		print()
 
+	print(f'\nLowest Loss: {loss_opt} \t Achieved in Epoch {epoch_opt}')
+	print(f'Location of Optimal Model: {path / "text.model"}')
 	return network
 
 def load_model():
 	network = RNN(D)
-	network.load_state_dict(torch.load(path+"text.model"))
+	network.load_state_dict(torch.load(path / "text.model"))
 	return network.to(device)
 
 
@@ -181,7 +191,7 @@ if __name__ == "__main__":
 
 	# first option: "train", "best" (get char with highest probability), others: sample char based on probabilies
 	option = sys.argv[1] if len(sys.argv) > 1 else "best"
-	samples = sys.argv[2] if len(sys.argv) > 2 else ("the ", "beau", "mothe", "bloo")
+	samples = [sys.argv[2]] if len(sys.argv) > 2 else ("the ", "beau", "mothe", "bloo")
 
 	if option == "train":
 		network = train_network()
@@ -214,15 +224,3 @@ if __name__ == "__main__":
 
 				# print seed and text
 				print(f"{seed} -> \"{text}\"")
-
-
-
-
-
-
-
-
-
-
-
-

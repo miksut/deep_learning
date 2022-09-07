@@ -1,3 +1,4 @@
+from pathlib import Path
 import torch
 from torch import nn
 from torchvision.datasets import MNIST
