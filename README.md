@@ -50,6 +50,13 @@ This repository hosts some implementations of prominent Deep Learning concepts. 
 
 - `08_CN_MNIST.py`: A convolutional neural network (CNN) is trained and tested on the MNIST dataset, using the PyTorch framework. The CNN comprises convolutional layers, pooling layers, as well as a fully-connected layer and is trained using categorical cross-entropy.
 
+- `09_face_recognition.py`: Using a CNN that has been pretrained on ImageNet as a deep feature extractor in order to perform face recognition. The [Yale Face Database](http://vision.ucsd.edu/content/yale-face-database) builds the data basis for the face recognition task. This dataset contains grayscale images of 15 people (i.e., the subjects) that have been photographed in 11 situations (i.e., eleven variations: normal, happy, sad, sleepy, surprised, wink, with glasses, without glasses, illumination from left, right, and the center). The extracted features of the "normal" images are stored in a gallery and build the reference points to which all the other images are compared to. The goal is to compare all remaining variations of all subjects to the gallery features and assign them to the correct subject. The table below illustrates this process. For example, the column "glasses" illustrates that images from five subjects (out of 15) wearing glasses are correctly classified (i.e., assigned to the correct gallery subject). 
+
+   normal  | happy | sad | sleepy | surprised | wink | glasses | noglasses | leftlight | rightlight | centerlight
+   :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: 
+   15/15 | 15/15 | 14/15 | 15/15 | 14/15 | 15/15 | 5/15 | 13/15 | 13/15 | 9/15 | 10/15
+
+- `10_open_set.py`:
 
  
 
