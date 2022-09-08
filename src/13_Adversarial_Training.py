@@ -7,11 +7,14 @@ from torchvision.transforms import ToTensor
 
 # global variables
 # --------------------------------------
+root_directory = Path(__file__).parent.parent.resolve()
 batch_size = 256
 device = "cuda"
 epochs = 50
 learning_rate = 0.001
-path = "data/MNIST/"
+path = root_directory / "data" / "MNIST"
+path_model = root_directory / "results" / "adversarial_training"
+path_model.mkdir(parents=True, exist_ok=True)
 method = "FGS"
 # set seed for reproducibility
 torch.manual_seed(0)
@@ -24,18 +27,18 @@ def command_line_options():
 	parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
 	# adding arguments
-	parser.add_argument("-t", "--train", default=False, help="Train the model (without adversarial training)")
+	parser.add_argument("-t", "--train", default=False, help="Train the model without adversarial training")
 	parser.add_argument("-t_adv", "--train_adversarial", default=False, help="Adversarial model training")
-	parser.add_argument("-g", "--generate", default=False, help="Generating and evaluating adversarial samples using non-adversarial trained model")
-	parser.add_argument("-g_adv", "--generate_adversarial", default=False, help="Generating and evaluating adversarial samples using adversarially trained model")
+	parser.add_argument("-eval", "--evaluate", default=False, help="Generating and evaluating adversarial samples using non-adversarial trained model")
+	parser.add_argument("-eval_adv", "--evaluate_adversarial", default=False, help="Generating and evaluating adversarial samples using adversarially trained model")
 
 	return parser.parse_args()
 
 
 # loading data and preparing data loader
 # --------------------------------------
-training_data = MNIST(root='data', train=True, download=False, transform=ToTensor())
-test_data = MNIST(root='data', train=False, download=False, transform=ToTensor())
+training_data = MNIST(root=root_directory / "data", train=True, download=False, transform=ToTensor())
+test_data = MNIST(root=root_directory / "data", train=False, download=False, transform=ToTensor())
 
 loader_train = torch.utils.data.DataLoader(training_data, batch_size=batch_size, shuffle=True)
 loader_test = torch.utils.data.DataLoader(test_data, batch_size=batch_size, shuffle=True)
@@ -174,28 +177,28 @@ def train_network(adv=False, method="FGS"):
 					print(f"\rBatch Loss: {float(batch_loss):3.5f}", end="")
 
 			if adv==True:
-				print(f"\rEpoch: {epoch} --- Training Loss: {loss_total/(2*len(loader_train))}")
+				print(f"\rEpoch: {epoch+1} --- Training Loss: {loss_total/(2*len(loader_train))}")
 			else:
-				print(f"\rEpoch: {epoch} --- Training Loss: {loss_total/len(loader_train)}")
+				print(f"\rEpoch: {epoch+1} --- Training Loss: {loss_total/len(loader_train)}")
 
 			# evaluate model on test dataset
 			if adv==True:
 				accuracy, accuracy_adv = eval_network(network, adv=True, method=method)
 				avg_accuracy = (accuracy+accuracy_adv)/2
-				print(f"\rEpoch: {epoch} --- Test Accuracy (original samples): {accuracy:3.5f} --- Test Accuracy (adversarial samples): {accuracy_adv}")
+				print(f"\rEpoch: {epoch+1} --- Test Accuracy (original samples): {accuracy:3.5f} --- Test Accuracy (adversarial samples): {accuracy_adv}")
 				print(f"\rAvgerage Accuracy: {avg_accuracy:3.5f}")
 				if avg_accuracy > accuracy_top:
 					accuracy_top = avg_accuracy
 					# save best model based on evaluations on test set
-					torch.save(network.state_dict(), path+"CNN_MNIST_ADV.model")
+					torch.save(network.state_dict(), path_model / "cnn_mnist_adv.model")
 
 			else:
 				test_loss, accuracy = eval_network(network)
-				print(f"\rEpoch: {epoch} --- Test Loss: {test_loss:3.5f} --- Test Accuracy: {accuracy}")
+				print(f"\rEpoch: {epoch+1} --- Test Loss: {test_loss:3.5f} --- Test Accuracy: {accuracy}")
 				if accuracy > accuracy_top:
 					accuracy_top = accuracy
 					# save best model based on evaluations on test set
-					torch.save(network.state_dict(), path+"CNN_MNIST.model")
+					torch.save(network.state_dict(), path_model / "cnn_mnist.model")
 
 	except KeyboardInterrupt:
 		print()
@@ -210,11 +213,11 @@ def train_network(adv=False, method="FGS"):
 def load_model(adv=False):
 	network = CNN()
 	if adv==False:
-		network.load_state_dict(torch.load(path+"CNN_MNIST.model"))
-		print(f"Loaded model: {path}CNN_MNIST.model")
+		network.load_state_dict(torch.load(path_model / "cnn_mnist.model"))
+		print(f"Loaded model: {path_model}\\cnn_mnist.model")
 	else:
-		network.load_state_dict(torch.load(path+"CNN_MNIST_ADV.model"))
-		print(f"Loaded model: {path}CNN_MNIST_ADV.model")
+		network.load_state_dict(torch.load(path_model / "cnn_mnist_adv.model"))
+		print(f"Loaded model: {path_model}\\cnn_mnist_adv.model")
 	return network.to(device)
 
 
@@ -240,15 +243,15 @@ if __name__ == "__main__":
 		network = train_network(adv=True, method=method)
 
 	# generating adversarial samples (based on model trained on original samples) and evaluate
-	if args.generate == "True":
+	if args.evaluate == "True":
 		network = load_model()
 		acc, acc_adv = eval_network(network, adv=True, method=method)
 
 		print(f"Accuracy on test set using original samples: {acc*100} %")
 		print(f"Accuracy on test set using adversarial samples ({method}): {acc_adv*100} %")
 
-	# generating adversarial samples (based adversarially trained model) and evaluate
-	if args.generate_adversarial == "True":
+	# generating adversarial samples (based on adversarially trained model) and evaluate
+	if args.evaluate_adversarial == "True":
 		network = load_model(adv=True)
 		acc, acc_adv = eval_network(network, adv=True, method=method)
 
