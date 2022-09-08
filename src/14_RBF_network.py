@@ -1,13 +1,22 @@
+from pathlib import Path
 import torch
 from torchvision.datasets import MNIST
 import torchvision
 import random
 import numpy as np
 
+torch.manual_seed(0)
+root_directory = Path(__file__).parent.parent.resolve()
+(root_directory / "results" / "rbf_network").mkdir(parents=True, exist_ok=True)
+
+
 # global variables
 # --------------------------------------
 device = torch.device("cuda")
-torch.manual_seed(0)
+learning_rate = 1e-4
+epochs = 100
+df_dim = 2 # deep feature dimensionality
+no_prototypes = 100 # number of prototypes for RBF layer
 
 
 # RBF layer
@@ -63,27 +72,28 @@ class RBFNetwork(torch.nn.Module):
 
 # preparing datasets
 # --------------------------------------
-train_set = MNIST(root='tmp', train=True, download=True, transform=torchvision.transforms.ToTensor())
+train_set = MNIST(root=root_directory / "data", train=True, download=True, transform=torchvision.transforms.ToTensor())
 train_loader = torch.utils.data.DataLoader(train_set, shuffle=True, batch_size=32)
 
-test_set = MNIST(root='tmp', train=False, download=True, transform=torchvision.transforms.ToTensor())
+test_set = MNIST(root=root_directory / "data", train=False, download=True, transform=torchvision.transforms.ToTensor())
 test_loader = torch.utils.data.DataLoader(test_set, shuffle=True, batch_size=32)
 
 
 # training
 # --------------------------------------
-network = RBFNetwork(2, 100)
-
+network = RBFNetwork(df_dim, no_prototypes)
 network = network.to(device)
 
 loss = torch.nn.CrossEntropyLoss()
-optimizer = torch.optim.SGD(params=network.parameters(), lr=1e-4, momentum=0.9)
+optimizer = torch.optim.SGD(params=network.parameters(), lr=learning_rate, momentum=0.9)
 
 # training network
 best = 0
-torch.save(network.state_dict(), F"Init.model")
+torch.save(network.state_dict(), root_directory / "results" / "rbf_network" / "Init.model")
 
-for epoch in range(100):
+print(f'Start Training:')
+print(f'Learning Rate: {learning_rate} \t Epochs: {epochs} \t Number of Prototypes: {no_prototypes}\n')
+for epoch in range(epochs):
 	for x,t in train_loader:
 		optimizer.zero_grad()
 		Z = network(x.to(device))
@@ -104,7 +114,4 @@ for epoch in range(100):
 	print(f"Epoch: {epoch+1}; test accuracy: {correct/len(test_set)*100.:1.2f} %")
 	if correct > best:
 		best = correct
-		torch.save(network.state_dict(), f"Best.model")
-
-print()
-
+		torch.save(network.state_dict(), root_directory / "results" / "rbf_network" / "Best.model")
