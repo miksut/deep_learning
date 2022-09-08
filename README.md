@@ -1,6 +1,6 @@
 # Deep Learning
 
-This repository hosts some implementations of prominent Deep Learning concepts. These implementations come in form of Python scripts and can be found in the folder `src/`. Concretely, the folder contains the following scripts:
+This repository hosts some implementations of prominent Deep Learning concepts. These implementations come in form of Python scripts and can be found in the folder [`src/`](https://github.com/miksut/deep_learning/tree/main/src). Concretely, the folder contains the scripts as listed below. In general, all scripts can be executed via a CLI by first navigating to the project's root folder and then running the script as `python .\src\<SCRIPT_NAME>`. Note that some scripts require additional arguments (see the respective sections below).
 
 ---
 -  `00_perceptron.py`: Implementation of a simple perceptron (that operates on 2-dimensional data) and a learning rule. Concretely, the learning process begins by randomly initializing the perceptron's weights $\vec w$. Then, a training sample $\vec x$ and its associated class target $t \in$ {-1, 1} are chosen and the class is predicted: $y = \vec w^{T}\vec x$. If wrongly classified (i.e., $y \cdot t < 0$), the weights are updated as $\vec w = \vec w + t \cdot \vec x$.
@@ -125,8 +125,9 @@ This repository hosts some implementations of prominent Deep Learning concepts. 
    ```
 ---
 
-- `14_RBF_network.py`: 
- 
+- `14_RBF_network.py`: The script implements a Radial Basis Function (RBF) layer and uses it to compose a CNN. The network is then trained and evaluated on the MNIST dataset. Depending on the preferences, the global variables (e.g., learning rate, epochs, number of prototypes for RBF layer) can be customized within the script.
+---
+
 
 
 
