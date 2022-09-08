@@ -100,8 +100,32 @@ This repository hosts some implementations of prominent Deep Learning concepts. 
    ```
 ---
 
+- `13_Adversarial_Training.py`: Considering the ideas of [Goodfellow et al. (2015)](https://arxiv.org/abs/1412.6572), this script implements a procedure that integrates adversarial samples into the training of a CNN. The adversarial samples are generated using the fast gradient sign (FGS, Goodfellow et al., 2015) as well as the fast gradient value (FGV, [Rozsa et al., 2016](https://ieeexplore.ieee.org/document/7789548)) methods. Using the MNIST dataset, the goal is to train a CNN that is more robust against adversarial samples. 
 
+   The script can be configured to perform vanilla training (i.e., train the CNN without adversarial samples) as well as adversarial training (i.e., include aversarial samples in the training procedure). Depending on the preferences, the global variables (e.g., batch size, epochs, learning rate) can be customized within the script. The training and evaluation of the network can be performed via CLI.
    
+   ```
+   $ python .\src\13_Adversarial_Training.py --train True      # train CNN without adversarial samples
+   $ python .\src\13_Adversarial_Training.py --train_adversarial True      # adversarial training
+   
+   $ python .\src\13_Adversarial_Training.py --evaluate True      # evaluate vanilla-trained CNN on test set
+   $ python .\src\13_Adversarial_Training.py --evaluate_adversarial True      # evaluate adversarially-trained CNN on test set
+   ```
+   
+   An exemplary performance comparison between the two training procedures is shown below. The first block refers to a CNN that has not seen adversarial samples during training and is evaluated on a test set containing adversarial samples. The second block is linked to a CNN that has undergone adversarial training and is evaluated on a test set containing adversarial samples.
+   
+   ```
+   Loaded model: D:\Projects\deep_learning\results\adversarial_training\cnn_mnist.model
+   Accuracy on test set using original samples: 98.33 %
+   Accuracy on test set using adversarial samples (FGS): 0.16999999999999998 %
+   
+   Loaded model: D:\Projects\deep_learning\results\adversarial_training\cnn_mnist_adv.model
+   Accuracy on test set using original samples: 98.63 %
+   Accuracy on test set using adversarial samples (FGS): 98.96000000000001 %
+   ```
+---
+
+- `14_RBF_network.py`: 
  
 
 
